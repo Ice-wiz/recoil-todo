@@ -1,13 +1,18 @@
+// TodoDetail.jsx
 import React, { useRef, useState, useEffect } from 'react';
 import { TodoActions } from './TodoActions';
+import { useSetRecoilState } from 'recoil';
+import { editTodoSelector, deleteTodoSelector } from '../store/atom/TodoListState';
 
-export const TodoDetail = ({ todo, onEdit, onDelete }) => {
+export const TodoDetail = ({ todo }) => {
     const descriptionRef = useRef(null);
     const [isOverflowing, setIsOverflowing] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [editTitle, setEditTitle] = useState(todo.title);
     const [editDescription, setEditDescription] = useState(todo.description);
+    const setEditTodo = useSetRecoilState(editTodoSelector);
+    const setDeleteTodo = useSetRecoilState(deleteTodoSelector);
 
     const toggleExpand = () => setIsExpanded(!isExpanded);
 
@@ -41,9 +46,9 @@ export const TodoDetail = ({ todo, onEdit, onDelete }) => {
         const updatedTodo = {
             ...todo,
             title: editTitle,
-            description: editDescription
+            description: editDescription,
         };
-        onEdit(updatedTodo);
+        setEditTodo(updatedTodo);
         setIsEditing(false);
     };
 
@@ -51,6 +56,10 @@ export const TodoDetail = ({ todo, onEdit, onDelete }) => {
         setIsEditing(false);
         setEditTitle(todo.title);
         setEditDescription(todo.description);
+    };
+
+    const handleDelete = () => {
+        setDeleteTodo(todo.id);
     };
 
     return (
@@ -85,9 +94,7 @@ export const TodoDetail = ({ todo, onEdit, onDelete }) => {
                 </div>
             ) : (
                 <>
-                    <div className="text-xl font-bold">
-                        {todo.title}
-                    </div>
+                    <div className="text-xl font-bold">{todo.title}</div>
                     <div
                         ref={descriptionRef}
                         className={`overflow-auto max-h-32 ${isExpanded || isOverflowing ? 'text-sm' : 'text-base'}`}
@@ -103,7 +110,7 @@ export const TodoDetail = ({ todo, onEdit, onDelete }) => {
                                 {isExpanded ? 'Read less' : 'Read more'}
                             </button>
                         )}
-                        <TodoActions onEdit={handleEditClick} onDelete={onDelete} />
+                        <TodoActions onEdit={handleEditClick} onDelete={handleDelete} />
                     </div>
                 </>
             )}

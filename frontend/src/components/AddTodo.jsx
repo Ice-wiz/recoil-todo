@@ -1,10 +1,13 @@
-import { useState } from "react"
+// AddTodo.jsx
+import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { useSetRecoilState } from 'recoil';
+import { addTodoSelector } from '../store/atom/TodoListState';
 
-export const AddTodo = ({onAdd}) => {
-
-    const [title, setTitle] = useState('')
-    const [description, setDescription] = useState("");
+export const AddTodo = React.memo (() => {
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const addTodo = useSetRecoilState(addTodoSelector);
 
     const handleAddTodo = (e) => {
         e.preventDefault();
@@ -12,15 +15,13 @@ export const AddTodo = ({onAdd}) => {
         const newTodo = {
             title,
             description,
-            id: uuidv4()
-        }
+            id: uuidv4(),
+        };
 
-        onAdd(newTodo)
+        addTodo(newTodo);
         setTitle('');
         setDescription('');
-
-        console.log(newTodo);
-    }
+    };
 
     return (
         <div className="p-4">
@@ -54,4 +55,5 @@ export const AddTodo = ({onAdd}) => {
             </form>
         </div>
     );
-};
+
+});
